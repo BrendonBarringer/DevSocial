@@ -142,8 +142,12 @@ router.delete(
         .then(post => {
           if (
             post.likes.filter(like => like.user.toString() === req.user.id)
-              .length == 0
-          ) 
+              .length === 0
+          ) {
+            return res
+              .status(400)
+              .json({ notlikes: "You have not yet likes this post" });
+          }
 
           // Get remove index
           const removeIndex = post.likes
@@ -163,7 +167,6 @@ router.delete(
   }
 );
 
-
 // @route   POST api/posts/comment/:id
 // @desc    comment on a post
 // @access  Private
@@ -178,8 +181,8 @@ router.post(
           text: req.body.text,
           name: req.body.name,
           avatar: req.body.avatar,
-          user:req.user.id
-        }
+          user: req.user.id
+        };
 
         // Add to comments array
         post.comments.unshift(newComment);
@@ -204,8 +207,14 @@ router.delete(
     Post.findById(req.params.id)
       .then(post => {
         // Check to see if comment exists
-        if (post.comments.filter(comment => comment._id.toString() === req.params.comment_id).length === 0) {
-          return res.status(404).json({ commentdoesntexist: 'Comment does not exist' });
+        if (
+          post.comments.filter(
+            comment => comment._id.toString() === req.params.comment_id
+          ).length === 0
+        ) {
+          return res
+            .status(404)
+            .json({ commentdoesntexist: "Comment does not exist" });
         }
 
         // Get remove index
